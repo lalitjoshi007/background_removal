@@ -24,8 +24,18 @@ def remove_bg():
         # Get background color or file
         bg_color = request.args.get("bg", "transparent")
         bg_file = request.files.get("bg_file", None)
-        width = int(request.form.get("width"))
-        height = int(request.form.get("height"))
+        width_str = request.form.get("width")
+        height_str = request.form.get("height")
+
+        if not width_str or not height_str:
+            return jsonify({"error": "Width and height are required"}), 400
+
+        try:
+            width = int(width_str)
+            height = int(height_str)
+        except ValueError:
+            return jsonify({"error": "Width and height must be integers"}), 400
+
 
         # Process image (Run in a separate thread for faster response)
         processed_image = process_image(input_image, bg_color, bg_file, output_size=(width, height))
